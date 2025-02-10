@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head> 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Light bulb and switch model</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <style>
+    .bulb-on {
+      color: #fbbf24;
+      text-shadow: 0 0 10px rgba(255, 255, 0, 0.8), 0 0 20px rgba(255, 255, 0, 0.6); }
+    .bulb-off { color: #9ca3af; }
+    .switch-on { color: #34d399; }
+    .switch-off { color: #9ca3af; }
+  </style>
+</head>
+
+<body class="bg-gray-900 flex justify-center items-center min-h-screen">
+  <div class="text-center">
+    <i id="bulb" class="bx bxs-bulb text-6xl bulb-off transition-all duration-500"></i>
+    <p class="text-white mt-4">Light bulb</p>
+
+    <div id="switch" class="cursor-pointer mt-8 text-5xl switch-off transition-all duration-500">
+      <i class="bx bxs-toggle-left"></i>
+    </div>
+    <p class="text-white mt-2">Switch</p>
+  </div>
+
+  <script src="./Light.js"></script>
+</body>
+</html>
