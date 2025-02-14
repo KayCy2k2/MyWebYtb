@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Particle Heart</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particleCanvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById("particleCanvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const numParticles = 800; // Tăng số lượng hạt để phủ kín viền trái tim
+    const particles = [];
+    let formingHeart = false;
+    const heartPoints = [];
+    const textPoints = [];
+
+    function generateHeartShape() {
+      const points = [];
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2 - 50;
+      const scale = 20; // Kích thước trái tim lớn hơn
+
+      for (let t = 0; t < Math.PI * 2; t += 0.05) { // Giảm bước nhảy để thêm nhiều điểm
+        const x = 16 * Math.sin(t) ** 3;
+        const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+        points.push({
+          x: centerX + x * scale,
+          y: centerY - y * scale,
+        });
+      }
+
+      return points;
+    }
+
+    function generateTextPoints(text, x, y, fontSize) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.font = `${fontSize}px Arial bold`;
+      ctx.fillStyle = "white";
+      ctx.textAlign = "center";
+      ctx.fillText(text, x, y);
+
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const points = [];
+      for (let i = 0; i < imgData.data.length; i += 4) {
+        const alpha = imgData.data[i + 3];
+        if (alpha > 128) {
+          const col = (i / 4) % imgData.width;
+          const row = Math.floor(i / 4 / imgData.width);
+          points.push({ x: col, y: row });
+        }
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      return points.filter((_, index) => index % 5 === 0); // Lọc mật độ điểm phù hợp cho chữ
+    }
+
+    for (let i = 0; i < numParticles; i++) {
+      const size = Math.random() * 7 + 3; // Kích thước hạt
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: size,
+        speedX: (Math.random() - 0.5) * 2,
+        speedY: (Math.random() - 0.5) * 2,
+        targetX: null,
+        targetY: null,
+      });
+    }
+
+    heartPoints.push(...generateHeartShape());
+    textPoints.push(...generateTextPoints("Valentine's Day", canvas.width / 2, canvas.height / 2, 60));
+
+    function drawHeart(ctx, x, y, size) {
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.bezierCurveTo(x - size / 2, y - size / 2, x - size, y + size / 3, x, y + size);
+      ctx.bezierCurveTo(x + size, y + size / 3, x + size / 2, y - size / 2, x, y);
+      ctx.closePath();
+      ctx.fillStyle = "rgb(255, 0, 100)";
+      ctx.fill();
+    }
+
+    function updateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach((particle, index) => {
+        if (formingHeart) {
+          const target = index < heartPoints.length
+            ? heartPoints[index]
+            : textPoints[index - heartPoints.length] || particle;
+          particle.targetX = target.x;
+          particle.targetY = target.y;
+
+          particle.x += (particle.targetX - particle.x) * 0.1;
+          particle.y += (particle.targetY - particle.y) * 0.1;
+        } else {
+          particle.x += particle.speedX;
+          particle.y += particle.speedY;
+          particle.size -= 0.1;
+
+          if (particle.size <= 0) {
+            particle.x = Math.random() * canvas.width;
+            particle.y = Math.random() * canvas.height;
+            particle.size = Math.random() * 7 + 3;
+          }
+        }
+
+        drawHeart(ctx, particle.x, particle.y, particle.size);
+      });
+
+      requestAnimationFrame(updateParticles);
+    }
+
+    updateParticles();
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    canvas.addEventListener("click", () => {
+      formingHeart = !formingHeart;
+
+      if (!formingHeart) {
+        particles.forEach((particle) => {
+          particle.targetX = null;
+          particle.targetY = null;
+        });
+      }
+    });
+  </script>
+</body>
+</html>
