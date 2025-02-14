@@ -24,8 +24,7 @@
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-
-    const numParticles = 800; // Tăng số lượng hạt để phủ kín viền trái tim
+    const numParticles = window.innerWidth > 768 ? 800 : 400;
     const particles = [];
     let formingHeart = false;
     const heartPoints = [];
@@ -45,7 +44,6 @@
           y: centerY - y * scale,
         });
       }
-
       return points;
     }
 
@@ -84,7 +82,7 @@
     }
 
     heartPoints.push(...generateHeartShape());
-    textPoints.push(...generateTextPoints("Valentine's Day", canvas.width / 2, canvas.height / 2, 60));
+    textPoints.push(...generateTextPoints("Valentine's Day", canvas.width / 2, canvas.height / 2, Math.min(60, canvas.width / 15)));
 
     function drawHeart(ctx, x, y, size) {
       ctx.beginPath();
@@ -120,10 +118,8 @@
             particle.size = Math.random() * 7 + 3;
           }
         }
-
         drawHeart(ctx, particle.x, particle.y, particle.size);
       });
-
       requestAnimationFrame(updateParticles);
     }
 
@@ -132,11 +128,16 @@
     window.addEventListener("resize", () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+    
+      heartPoints.length = 0;
+      textPoints.length = 0;
+      
+      heartPoints.push(...generateHeartShape());
+      textPoints.push(...generateTextPoints("Valentine's Day", canvas.width / 2, canvas.height / 2, Math.min(60, canvas.width / 15)));
     });
 
     canvas.addEventListener("click", () => {
       formingHeart = !formingHeart;
-
       if (!formingHeart) {
         particles.forEach((particle) => {
           particle.targetX = null;
