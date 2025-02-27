@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đối Chiếu Biển Số Xe</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js"></script>
+    <script src="https://docs.opencv.org/4.5.2/opencv.js"></script>
+</head>
+
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen">
+    <h1 class="text-2xl font-bold">Đối Chiếu Biển Số Xe</h1>
+    <p id="compareResult" class="text-lg font-bold"></p>
+
+    <div class="mt-4 grid grid-cols-2 gap-4">
+        <div class="bg-white p-4 rounded-lg shadow-md flex flex-col items-center">
+            <input type="file" id="imageInput1" accept="image/*" class="mb-2">
+            <canvas id="canvas1" class="hidden"></canvas>
+            <img id="imagePreview1" class="w-64 h-40 object-contain border-2 border-gray-300 rounded"
+                alt="Ảnh biển số 1">
+            <p id="result1" class="font-bold mt-2 text-gray-700"></p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-md flex flex-col items-center">
+            <input type="file" id="imageInput2" accept="image/*" class="mb-2">
+            <canvas id="canvas2" class="hidden"></canvas>
+            <img id="imagePreview2" class="w-64 h-40 object-contain border-2 border-gray-300 rounded"
+                alt="Ảnh biển số 2">
+            <p id="result2" class="font-bold mt-2 text-gray-700"></p>
+        </div>
+    </div>
+    <!-- Video hiển thị camera -->
+    <video id="video" class="hidden w-64 h-40 border-2 border-gray-300 rounded" autoplay></video>
+    <canvas id="captureCanvas" class="hidden"></canvas>
+
+    <div class="mt-4 flex items-center gap-2">
+        <button id="openCameraBtn" class="p-2 bg-green-500 text-white font-semibold rounded-lg">Mở
+            Camera</button>
+        <button id="captureBtn" class="p-2 bg-red-500 text-white font-semibold rounded-lg hidden">Chụp
+            Ảnh</button>
+        <button id="compareBtn" class="p-2 bg-blue-500 text-white font-semibold rounded-lg">Đối Chiếu</button>
+        <input type="checkbox" id="autoCheck" class="w-5 h-5">
+        <label for="autoCheck" class="text-gray-700">Tự động đối chiếu</label>
+    </div>
+
+    <script type="module">
+        import { setupEventListeners, initCamera } from "./CompareLicensePlates.js";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const video = document.getElementById("video");
+            const captureCanvas = document.getElementById("captureCanvas");
+            const openCameraBtn = document.getElementById("openCameraBtn");
+            const captureBtn = document.getElementById("captureBtn");
+            const imagePreview1 = document.getElementById("imagePreview1");
+            const result1 = document.getElementById("result1");
+
+            initCamera(video, captureCanvas, openCameraBtn, captureBtn, imagePreview1, result1);
+        });
+
+        setupEventListeners();
+    </script>
+</body>
+
+</html>
